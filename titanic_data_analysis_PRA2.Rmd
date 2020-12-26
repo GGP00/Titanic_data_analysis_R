@@ -1,0 +1,25 @@
+---
+title: "PRA2 - Tipología y ciclo de vida de dato"
+output: html_notebook
+---
+<br><br>
+<center> <h3> _Alumnos: Omar Mendo Mesa y Guzmán Gómez Pérez _  </h3> </center>
+<br><br>
+
+### Descripción de atributos:
+
+__pclass__: Categórica (factor). Aproximación del estado socio-económico.
+* 1st = Upper
+* 2nd = Middle
+* 3rd = Lower
+
+__age__: Numérico. Fraccional en caso de ser inferior a 1.
+
+__sibsp__: Categórica (factor). Relaciones familiares (horizontal): 
+* Sibling = brother, sister, stepbrother, stepsister, 
+* Spouse = husband, wife.
+
+__parch__: Categórica (factor). Relaciones familiares (vertical): 
+* Parent = mother, father
+* Child = daughter, son, stepdaughter, stepson
+* 0 si el niño viajaba con una cuidadora.
