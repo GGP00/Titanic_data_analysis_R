@@ -1,1 +1,1 @@
-# Titanic_data_analysis
+# Titanic data analysis in R
