@@ -1,25 +1,165 @@
 ---
 title: "PRA2 - Tipología y ciclo de vida de dato"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 <br><br>
 <center> <h3> _Alumnos: Omar Mendo Mesa y Guzmán Gómez Pérez _  </h3> </center>
 <br><br>
 
-### Descripción de atributos:
 
-__pclass__: Categórica (factor). Aproximación del estado socio-económico.
+## Índice
+
+
+1. Descripción del dataset. ¿Por qué es importante y qué pregunta/problema pretende
+responder?
+
+2. Integración y selección de los datos de interés a analizar.
+
+3. Limpieza de los datos.
+
+3.1. ¿Los datos contienen ceros o elementos vacíos? ¿Cómo gestionarías cada uno
+de estos casos?
+
+3.2. Identificación y tratamiento de valores extremos.
+
+4. Análisis de los datos.
+
+4.1. Selección de los grupos de datos que se quieren analizar/comparar (planificación
+de los análisis a aplicar).
+
+4.2. Comprobación de la normalidad y homogeneidad de la varianza.
+
+4.3. Aplicación de pruebas estadísticas para comparar los grupos de datos. En función
+de los datos y el objetivo del estudio, aplicar pruebas de contraste de hipótesis,
+correlaciones, regresiones, etc. Aplicar al menos tres métodos de análisis
+diferentes.
+
+5. Representación de los resultados a partir de tablas y gráficas.
+
+6. Resolución del problema. A partir de los resultados obtenidos, ¿cuáles son las
+conclusiones? ¿Los resultados permiten responder al problema?
+
+
+<br><br>
+
+#### 1. Descripción del dataset. ¿Por qué es importante y qué pregunta/problema pretende
+
+Este conjunto de datos contiene la información de los pasajeros del Titanic, aquel mítico ferri que naufragó el 15 de abril de 1912, durante su viaje inaugural, después de chocar con un iceberg. Desafortunadamente, murieron 1502 de los 2224 pasajeros y la tripulaciónm debido a la escasez de botes salvavidas y las frias temperaturas del oceano.
+
+Este documento estudia, a través de las herramientas de integración  si existió algún patrón entre los afortundados supervivientes.
+
+__1.1 Carga del dataset:__
+
+```{r}
+#getwd()
+setwd("/Users/guzman/Desktop/Máster UOC/Tipología y ciclo de vida de datos/bloque 2/Titanic_data_analysis_R/data")
+train_df <- read.csv(file="train.csv",head=TRUE,sep=",")
+test_df <- read.csv(file="test.csv",head=TRUE,sep=",")
+
+head(train_df,11)
+```
+
+__1.2 Descripción de atributos:__
+
+__Embarked__: Puerto de embarcación:
+
+* C = Cherbourg.
+* Q = Queenstown.
+* S = Southampton
+
+__Cabin__: Nº de cabina.
+
+__Fare__: Tarifa del pasajero.
+
+__Ticket__: Número (Id) del ticket de embarcación.
+
+__Sex__: Género del tripulante.
+
+* 1 si es hombre.
+* 0 si es mujer.
+
+__Survival__: Categórica. Potencial etiqueta supervisada de los modelos regresivo:
+
+* 1 si sobrevivió
+* 0 si no sobrevivió
+
+__pclass__: Categórica. Aproximación del estado socio-económico (ticket que pagaron para el viaje):
+
 * 1st = Upper
 * 2nd = Middle
 * 3rd = Lower
 
 __age__: Numérico. Fraccional en caso de ser inferior a 1.
 
-__sibsp__: Categórica (factor). Relaciones familiares (horizontal): 
+__sibsp__: Categórica. Relaciones familiares (horizontal): 
+
 * Sibling = brother, sister, stepbrother, stepsister, 
 * Spouse = husband, wife.
 
-__parch__: Categórica (factor). Relaciones familiares (vertical): 
+__parch__: Categórica. Relaciones familiares (vertical): 
+
 * Parent = mother, father
 * Child = daughter, son, stepdaughter, stepson
 * 0 si el niño viajaba con una cuidadora.
+
+
+<br><br>
+
+### 2. Integración y selección de los datos de interés a analizar.__
+
+__2.1 Exploración del tipado de los atributos:__
+
+```{r}
+str(train_df)
+```
+
+Algunos de los datos deberían ser categóricos y no numéricos, por ejemplo:
+
+```{r}
+train_df$Survived <- as.factor(train_df$Survived)
+train_df$Pclass <- as.factor(train_df$Pclass)
+train_df$SibSp <- as.factor(train_df$SibSp)
+train_df$Parch <- as.factor(train_df$Parch)
+```
+
+Esto se debe a que sus valores son representativos de subgrupos y no de una magnitud numérica medible.
+
+También hay algún atributo que debería ser numérico y es categórico, como es el caso del Ticket. Podríamos asumir que se trata del identificador del tripulante y que no contiene otro tipo de información deducible o complementaria.
+
+```{r}
+train_df$Ticket <- as.numeric(train_df$Ticket)
+```
+
+Y por último, otros que son categóricos y deberían ser caracteres (string).
+
+Los valores del atributo Cabin, están compuestos por combinaciones de caracteres y números, contienen cierto orden del que podría extraerse información, ya que este puede abstraer la distribución (localización) de las cabinas en zonas del barco.
+
+```{r}
+train_df$Cabin <- as.character(train_df$Cabin)
+```
+
+El nombre es prescindible puesto que ya tenemos un identificador en Ticket. Aun así, 
+podrían llegar a deducirse información útil como la nacionalidad (aproximada) del pasajero. Pero esta tarea no aplica al alcance de esta tarea.
+
+```{r}
+train_df$Name <- as.character(train_df$Name)
+```
+
+El tipado final quedaría del siguiente modo:
+ 
+```{r}
+str(train_df)
+```
+
+<br><br>
+
+### 3. Limpieza de los datos.__
+
+__3.1. ¿Los datos contienen ceros o elementos vacíos? ¿Cómo gestionarías cada uno de estos casos?__
+
+__3.2. Identificación y tratamiento de valores extremos.__
+
+
+
