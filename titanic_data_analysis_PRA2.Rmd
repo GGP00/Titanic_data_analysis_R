@@ -126,10 +126,10 @@ train_df$Parch <- as.factor(train_df$Parch)
 
 Esto se debe a que sus valores son representativos de subgrupos y no de una magnitud numérica medible.
 
-También hay algún atributo que debería ser numérico y es categórico, como es el caso del Ticket. Podríamos asumir que se trata del identificador del tripulante y que no contiene otro tipo de información deducible o complementaria.
+También hay algún atributo que debería ser numérico y es categórico, como es el caso del Ticket. Podríamos asumir que se trata del identificador del tripulante y que no contiene otro tipo de información deducible o complementaria, más allá del orden de compra del ticket, lo cual, dificilmente interviene en la supervivencia del pasajero. Además, ya tenemos un ID por lo que prescindiremos del atributo.
 
 ```{r}
-train_df$Ticket <- as.numeric(train_df$Ticket)
+train_df$Ticket <- NULL
 ```
 
 Y por último, otros que son categóricos y deberían ser caracteres (string).
@@ -140,14 +140,14 @@ Los valores del atributo Cabin, están compuestos por combinaciones de caractere
 train_df$Cabin <- as.character(train_df$Cabin)
 ```
 
-El nombre es prescindible puesto que ya tenemos un identificador en Ticket. Aun así, 
+El nombre es prescindible puesto que ya tenemos un identificador ya. Aun así, 
 podrían llegar a deducirse información útil como la nacionalidad (aproximada) del pasajero. Pero esta tarea no aplica al alcance de esta tarea.
 
 ```{r}
-train_df$Name <- as.character(train_df$Name)
+train_df$Name <- NULL
 ```
 
-El tipado final quedaría del siguiente modo:
+La distribución y el tipado final quedaría del siguiente modo:
  
 ```{r}
 str(train_df)
