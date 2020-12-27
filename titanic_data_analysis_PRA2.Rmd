@@ -296,8 +296,7 @@ __4.3. Aplicación de pruebas estadísticas para comparar los grupos de datos. E
 __5. Representación de los resultados a partir de tablas y gráficas.__
 
 
-No hay relación aparente entre la edad y la tarifa.
-
+Estudiamos la relación entre la edad y al tarifa:
 
 ```{r}
 #install.packages('PerformanceAnalytics')
@@ -306,6 +305,35 @@ library("PerformanceAnalytics")
 train_df_num <- subset(train_df, select=c("Age", "Fare"))
 chart.Correlation(train_df_num, histogram=TRUE, pch=19)
 ```
+
+
+No hay relación aparente entre la edad y la tarifa. Se podría deducir que los jóvenes de entorno 20 años pagaron las tarifas más baratas y los niños y adultos o ancianos las más caras.
+
+Veamos si hay relación entre la edad y la supervivencia.
+
+```{r}
+boxplot(Age~Survived,
+data=train_df,
+xlab="Survived",
+ylab="Age",
+col="orange",
+border="brown"
+)
+```
+
+Parece que los que sobrevivieron eran algo más jóvenes que los que no, sobre los 25 años de media. Probablemente los niños fueron los primeros en embarcar a los botes salvavidas.
+
+```{r}
+boxplot(Fare~Survived,
+data=train_df,
+xlab="Survived",
+ylab="Fare",
+col="orange",
+border="brown"
+)
+```
+
+Los que sobrevivieron también tenían tarifas más caras, por lo que probablemente se diera prioridad a gente de bien, o sencillamente, sus cabinas estaban mejor situadas para escapar que los que pagaron menos.
 
 
 ```{r}
