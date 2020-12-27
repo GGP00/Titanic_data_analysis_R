@@ -126,25 +126,12 @@ train_df$Parch <- as.factor(train_df$Parch)
 
 Esto se debe a que sus valores son representativos de subgrupos y no de una magnitud numérica medible.
 
-También hay algún atributo que debería ser numérico y es categórico, como es el caso del Ticket. Podríamos asumir que se trata del identificador del tripulante y que no contiene otro tipo de información deducible o complementaria, más allá del orden de compra del ticket, lo cual, dificilmente interviene en la supervivencia del pasajero. Además, ya tenemos un ID por lo que prescindiremos del atributo.
-
-```{r}
-train_df$Ticket <- NULL
-```
-
-Y por último, otros que son categóricos y deberían ser caracteres (string).
+Y otros, son categóricos y deberían ser caracteres (string).
 
 Los valores del atributo Cabin, están compuestos por combinaciones de caracteres y números, contienen cierto orden del que podría extraerse información, ya que este puede abstraer la distribución (localización) de las cabinas en zonas del barco.
 
 ```{r}
 train_df$Cabin <- as.character(train_df$Cabin)
-```
-
-El nombre es prescindible puesto que ya tenemos un identificador ya. Aun así, 
-podrían llegar a deducirse información útil como la nacionalidad (aproximada) del pasajero. Pero esta tarea no aplica al alcance de esta tarea.
-
-```{r}
-train_df$Name <- NULL
 ```
 
 La distribución y el tipado final quedaría del siguiente modo:
@@ -153,13 +140,158 @@ La distribución y el tipado final quedaría del siguiente modo:
 str(train_df)
 ```
 
+Terminamos con un resumen de los indicadores estadísticos de cada atributo; cuartiles, media, mediana, maximo y minimo para los numéricos. Distribución de valores para los factores. Cantidad de observaciones para los caracteres.
+
+```{r}
+summary(train_df)
+```
+
+Podemos sacar conclusiones de interés, como:
+
+* Había 263 hombres más que mujeres (lo cual probablemente repercuta en las regresiones al asumir que el hombre tenía más probabilidades de no sobrevivir).
+* La edad media de los tripulantes era de 30 años aproximadamente. El más anciano tenía 80 años y el más jóven tenía 4 meses y medio. El 50% de la población oscilaba entre los 20 y los 38 años.
+* 
+
 <br><br>
 
 ### 3. Limpieza de los datos.__
 
 __3.1. ¿Los datos contienen ceros o elementos vacíos? ¿Cómo gestionarías cada uno de estos casos?__
 
+Investigamos ahora qué cantidad de valores asuentes o vacíos hay en cada atributo.
+
+Para el único atributo de tipo String, deberemos considerar los caracteres vacíos como valores ausentes también. En los factores no es necesario puesto que se podrían considerar una categoría más.
+
+```{r}
+train_df$Cabin[train_df$Cabin==""] <- NA
+train_df$Cabin[train_df$Cabin==" "] <- NA
+```
+
+
+```{r}
+sapply(train_df, function(x) sum(is.na(x)))
+```
+
+Son demasiados registros como para eliminarlos. Para imputar estos valores se podría aplicar un clustering por k Nearest Neighbourgs, reemplazando el valor nulo por el valor de las observaciones (pasajeros). Por ejemplo, aquellos que tengan un parentesco similar, es muy probable que tengan un rango de edad similar.
+
+
+```{r}
+#install.packages('VIM')
+library(VIM)
+
+train_df$Age <- kNN(train_df)$Age
+```
+
+El caso de la cabina no tiene sentido inferirlo por clustering. Ya que ningún atributo correlacciona apropiadamente este valor. En cambio, se sustituirá por un valor común, que podrá ser útil en caso de que estos pasajeros sin cabina, guardaran algún tipo de vinculo.
+
+```{r}
+train_df$Cabin[is.na(train_df$Cabin)] <- "Sin cabina"
+```
+
+
+
+
 __3.2. Identificación y tratamiento de valores extremos.__
+
+
+
+Veamos qué valores numéricos marginales puede haber en los atributos numéricos Age y Fare. Estos valores pueden aparecer por errores de inserción o por ser observaciones anómalas; se eliminarán para tratar de conseguir unas regresiones que generalicen lo mejor posible.
+
+```{r}
+outlier_values <- boxplot.stats(train_df$Age)$out
+boxplot(train_df$Age, main="Age", boxwex=0.1)
+mtext(paste("Outliers: ", paste(outlier_values, collapse=", ")), cex=0.6)
+train_df <- train_df[-which(train_df$Age %in% outlier_values),] # los eliminamos
+```
+
+Los valores extremos se sitúan a partir de los 66 años en adelante.
+
+```{r}
+library(ggplot2)
+ggplot(train_df, aes(x = Age)) + geom_histogram(aes(y = ..density..), binwidth=2, color='blue', fill="white") + geom_density(color='red')
+```
+
+Observamos en el histograma superior que la distribución parece ser gaussiana.
+
+
+```{r}
+outlier_values <- boxplot.stats(train_df$Fare)$out
+boxplot(train_df$Fare, main="Fare", boxwex=0.1)
+mtext(paste("Outliers: ", paste(outlier_values, collapse=", ")), cex=0.6)
+train_df <- train_df[-which(train_df$Fare %in% outlier_values),] # los eliminamos
+```
+
+
+Por lo visto, era extraño que el ticket superara el coste de los 70 dolares. Los costes más altos se deberían o bien a errores o bien a Cabinas con unas condiciones privilegiadas. Y por lo visto, no era raro pasar gratis, ya que el cero lo considera un valor común más.
+
+
+```{r}
+ggplot(train_df, aes(x = Fare)) + geom_histogram(aes(y = ..density..), binwidth=2, color='blue', fill="white") + geom_density(color='red')
+```
+
+
+
+### 4. Análisis de los datos.
+
+__4.1. Selección de los grupos de datos que se quieren analizar/comparar (planificación de los análisis a aplicar).__
+
+El nombre es prescindible puesto que ya tenemos un identificador ya. Aun así, 
+podrían llegar a deducirse información útil como la nacionalidad (aproximada) del pasajero. Pero esta tarea no aplica al alcance de esta tarea.
+
+```{r}
+train_df$Name <- NULL
+```
+
+Del mismo modo, podríamos asumir que el ticket se trata del identificador del tripulante y que no contiene otro tipo de información deducible o complementaria, más allá del orden de compra del ticket, lo cual, dificilmente interviene en la supervivencia del pasajero. Además, ya tenemos un ID por lo que prescindiremos del atributo.
+
+```{r}
+train_df$Ticket <- NULL
+```
+
+
+__4.2. Comprobación de la normalidad y homogeneidad de la varianza.__
+
+Veamos si los atributos numéricos Age y Fare siguen una distribución normal.
+
+Para ambos casos y según el teorema del límite central, al ser el tamaños de la muestras suficientemente grande (> 30), siguen __distirbución normal estándar__.
+
+Ahora aplicaremos el __test de Shapiro__ para confirmar esta distribución:
+
+
+```{r}
+alpha = 0.05
+shapiro.test(train_df$Age)$p.value > alpha
+```
+
+Age tiene una distribución normal.
+
+```{r}
+alpha = 0.05
+shapiro.test(train_df$Fare)$p.value > alpha
+```
+
+Fare tiene una distribución normal.
+
+Ambos atributos pasan el test al ser los valores de p superiores al del nivel de significacia 0.05.
+
+Por otro lado, utilizamos el gráfico Q-Q, para diagnosticar la desviación de los datos de la muestra en relación con una población normal:
+
+```{r}
+qqnorm(train_df$Age)
+qqline(train_df$Age)
+```
+
+
+```{r}
+qqnorm(train_df$Fare)
+qqline(train_df$Fare)
+```
+
+Ambos conjuntos de datos cumplen la linealidad de la diagonal (aproximadamente), confirmando el resultado del test Shapiro-Wilk y con ello la normalidad de sus distribuciones.
+
+__4.3. Aplicación de pruebas estadísticas para comparar los grupos de datos. En función de los datos y el objetivo del estudio, aplicar pruebas de contraste de hipótesis, correlaciones, regresiones, etc. Aplicar al menos tres métodos de análisis diferentes.__
+
+__5. Representación de los resultados a partir de tablas y gráficas.__
 
 
 
