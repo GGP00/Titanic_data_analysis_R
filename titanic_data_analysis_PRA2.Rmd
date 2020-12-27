@@ -289,9 +289,34 @@ qqline(train_df$Fare)
 
 Ambos conjuntos de datos cumplen la linealidad de la diagonal (aproximadamente), confirmando el resultado del test Shapiro-Wilk y con ello la normalidad de sus distribuciones.
 
+__El apartado 4.3 y el 5 se realizarán simultáneamente.__
+
 __4.3. Aplicación de pruebas estadísticas para comparar los grupos de datos. En función de los datos y el objetivo del estudio, aplicar pruebas de contraste de hipótesis, correlaciones, regresiones, etc. Aplicar al menos tres métodos de análisis diferentes.__
 
 __5. Representación de los resultados a partir de tablas y gráficas.__
+
+
+No hay relación aparente entre la edad y la tarifa.
+
+
+```{r}
+#install.packages('PerformanceAnalytics')
+
+library("PerformanceAnalytics")
+train_df_num <- subset(train_df, select=c("Age", "Fare"))
+chart.Correlation(train_df_num, histogram=TRUE, pch=19)
+```
+
+
+```{r}
+
+#install.packages('corrplot')
+
+library(corrplot)
+corrplot(train_df)
+```
+
+
 
 
 
