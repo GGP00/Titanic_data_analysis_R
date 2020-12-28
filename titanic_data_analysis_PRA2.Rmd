@@ -283,67 +283,38 @@ qqline(train_df$Fare)
 
 Ambos conjuntos de datos cumplen la linealidad de la diagonal (aproximadamente), confirmando el resultado del test Shapiro-Wilk y con ello la normalidad de sus distribuciones.
 
-__El apartado 4.3 y el 5 se realizarán simultáneamente.__
-
 __4.3. Aplicación de pruebas estadísticas para comparar los grupos de datos. En función de los datos y el objetivo del estudio, aplicar pruebas de contraste de hipótesis, correlaciones, regresiones, etc. Aplicar al menos tres métodos de análisis diferentes.__
 
-__5. Representación de los resultados a partir de tablas y gráficas.__
+__Correlaciones:__
 
 
-Estudiamos la relación entre la edad y al tarifa:
-
-```{r}
-#install.packages('PerformanceAnalytics')
-
-library("PerformanceAnalytics")
-train_df_num <- subset(train_df, select=c("Age", "Fare"))
-chart.Correlation(train_df_num, histogram=TRUE, pch=19)
-```
 
 
-No hay relación aparente entre la edad y la tarifa. Se podría deducir que los jóvenes de entorno 20 años pagaron las tarifas más baratas y los niños y adultos o ancianos las más caras.
+__Contraste de hipótesis:__
 
-Veamos si hay relación entre la edad y la supervivencia.
+* __Hipótesis nula o de partida unilateral (H0):__ el coste medio de los tickets de los supervivientes supera en 6 dolares al coste de los que no sobrevivieron.
+
+* __Hipótesis alternativa  (H1):__ el coste medio de los tickets de los supervivientes es igual o menor a 6 dolares al coste de los que no sobrevivieron.
+
+Confirmamos distribuciones normales de los subconjuntos poblacionales (t-student al ser muestrales).
 
 ```{r}
-boxplot(Age~Survived,
-data=train_df,
-xlab="Survived",
-ylab="Age",
-col="orange",
-border="brown"
-)
-```
-
-Parece que los que sobrevivieron eran algo más jóvenes que los que no, sobre los 25 años de media. Probablemente los niños fueron los primeros en embarcar a los botes salvavidas.
-
-```{r}
-boxplot(Fare~Survived,
-data=train_df,
-xlab="Survived",
-ylab="Fare",
-col="orange",
-border="brown"
-)
-```
-
-Los que sobrevivieron también tenían tarifas más caras, por lo que probablemente se diera prioridad a gente de bien, o sencillamente, sus cabinas estaban mejor situadas para escapar que los que pagaron menos.
-
-```{r}
-install.packages('sjPlot')
-
-library(sjPlot)
-sjp.corr(train_df)
-sjt.corr(train_df)
+alpha = 0.05
+shapiro.test(train_df$Fare[ train_df$Survived==1 ])$p.value > alpha
 ```
 
 ```{r}
-
-#install.packages('corrplot')
-
-library(corrplot)
-corrplot(train_df)
+alpha = 0.05
+shapiro.test(train_df$Fare[ train_df$Survived==0 ])$p.value > alpha
 ```
+
+Efectivamente, lo son. Por tanto:
+
+```{r}
+t.test(train_df$Fare[ train_df$Survived==1 ], train_df$Fare[ train_df$Survived==0 ],alternative="greater", var.equal=FALSE)
+```
+
+Se apoya la hipótesis nula de que las tarifas de los supervivientes superaban los 6 dolares a las de los no supervivientes con una tasa de acierto del 95%.
 
 
 __Regresión logística:__
@@ -369,5 +340,52 @@ Los atributos que más impacto tienen en el resultado de la supervivencia del na
 * CabinA20, CabinA26, CabinA31 Algunas cabinas fueron afortunadas, lógicamente por su ubicación, pudieron, quizás, llegar antes a los botes salvavidas.
 
 
+
+__5. Representación de los resultados a partir de tablas y gráficas.__
+
+
+Relación entre el género y la supervivencia:
+
+```{r}
+ggplot(train_df, aes(Sex, ..count..)) + geom_bar(aes(fill = Survived), position = "dodge")
+```
+
+Confirmamos que ser hombres perjudicaba a la supervivencia.
+
+Relación entre el parenteso "horizontal" y la supervivencia:
+
+```{r}
+ggplot(train_df, aes(SibSp, ..count..)) + geom_bar(aes(fill = Survived), position = "dodge")
+```
+
+Confirmamos que a mayor número de familiares, menor probabilidad de supervivencia.
+
+Relación entre la edad y la supervivencia:
+
+```{r}
+boxplot(Age~Survived,
+data=train_df,
+xlab="Survived",
+ylab="Age",
+col="orange",
+border="brown"
+)
+```
+
+Confirmamos que los que sobrevivieron eran algo más jóvenes que los que no, sobre los 25 años de media.
+
+Relación entre la tarifa y la supervivencia:
+
+```{r}
+boxplot(Fare~Survived,
+data=train_df,
+xlab="Survived",
+ylab="Fare",
+col="orange",
+border="brown"
+)
+```
+
+Confirmamos que los que sobrevivieron también tenían tarifas más caras.
 
 
