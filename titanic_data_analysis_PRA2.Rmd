@@ -93,17 +93,11 @@ __pclass__: Categórica. Aproximación del estado socio-económico (ticket que p
 
 __age__: Numérico. Fraccional en caso de ser inferior a 1.
 
-__sibsp__: Categórica. Relaciones familiares (horizontal): 
+__sibsp__: Categórica.  Nº de  parientes directos (horizontal): de tipo hermanos, hermanastros o esposos (marido o mujer).
 
-* Sibling = brother, sister, stepbrother, stepsister, 
-* Spouse = husband, wife.
+__parch__: Categórica. Nº de  parientes directos (vertical); de tipo padre/madre, hijos, hijastros o nietos.
 
-__parch__: Categórica. Relaciones familiares (vertical): 
-
-* Parent = mother, father
-* Child = daughter, son, stepdaughter, stepson
 * 0 si el niño viajaba con una cuidadora.
-
 
 <br><br>
 
@@ -335,6 +329,13 @@ border="brown"
 
 Los que sobrevivieron también tenían tarifas más caras, por lo que probablemente se diera prioridad a gente de bien, o sencillamente, sus cabinas estaban mejor situadas para escapar que los que pagaron menos.
 
+```{r}
+install.packages('sjPlot')
+
+library(sjPlot)
+sjp.corr(train_df)
+sjt.corr(train_df)
+```
 
 ```{r}
 
@@ -344,6 +345,28 @@ library(corrplot)
 corrplot(train_df)
 ```
 
+
+__Regresión logística:__
+
+Al ser la etiqueta supervisada binaria, aplicamos una regresión logística:
+
+```{r}
+glm.fit <- lm(as.numeric(Survived) ~ Pclass + Sex + Age + SibSp + Parch + Fare + Cabin + Embarked, data = train_df)
+summary(glm.fit)
+```
+
+
+Los atributos que más impacto tienen en el resultado de la supervivencia del naufragio son:
+
+* Sexmale: Los hombres tenían una probabilidad muy alta de no sobrevivir, probablemente porque fueron los últimos en entrar a los botes salvavidas, priorizando a mujeres y niños.
+
+* Age: Cuanto mayor eras, menos probabilidades de supervivencia tenías, muy probablemente, por la misma razón que la anteriormente explicada.
+
+* SibSp3, SibSp4, SibSp5: tener muchos familiares a bordo no era una garantía de supervivencia, probablemente, por tener que priorizarles o perder tiempo velando por su supervivencia durante el naufragio.
+
+* Fare: Haber pagado una tarifa alta contribuía en cierta medida a la supervivencia, probablemente vinculado a la relevancia de esas personas y/o a su prioridad en botes salvavidas, incluida en las condiciones de embarque.
+
+* CabinA20, CabinA26, CabinA31 Algunas cabinas fueron afortunadas, lógicamente por su ubicación, pudieron, quizás, llegar antes a los botes salvavidas.
 
 
 
