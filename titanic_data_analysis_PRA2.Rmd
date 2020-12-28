@@ -3,6 +3,7 @@ title: "PRA2 - Tipología y ciclo de vida de dato"
 output:
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 <br><br>
 <center> <h3> _Alumnos: Omar Mendo Mesa y Guzmán Gómez Pérez _  </h3> </center>
