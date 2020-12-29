@@ -55,7 +55,7 @@ __1.1 Carga del dataset:__
 
 ```{r}
 #getwd()
-setwd("/Users/guzman/Desktop/Máster UOC/Tipología y ciclo de vida de datos/bloque 2/Titanic_data_analysis_R/data")
+setwd("/Users/omendom/Desktop/Máster/Tipología y ciclo de vida de los datos/PRA2/Titanic_data_analysis_R/data")
 train_df <- read.csv(file="train.csv",head=TRUE,sep=",")
 test_df <- read.csv(file="test.csv",head=TRUE,sep=",")
 
@@ -288,7 +288,64 @@ __4.3. Aplicación de pruebas estadísticas para comparar los grupos de datos. E
 
 __Correlaciones:__
 
+Para comenzar con la aplicación de pruebas estadísticas sobre nuestro conjunto de datos, usaremos una **matriz de correlación** para poder observar o seleccionar las variables que sean de mayor interés o que nos arrojen algún resultado esclarecedor de si alguna de las variables descritas en nuestro dataset, infiere sobre la probabilidad de supervivencia.
 
+Para realizar dicha matriz, tenemos que realizar una serie de modificaciones en nuestro conjunto de datos, ya que para poder realizar correlaciones entre múltiples variables, necesitamos que estas sean *numéricas*. Por ello, la variable *Sex* la modificaremos, donde el valor **female** tomará el valor **1** y el valor **male** tomará el valor **0**. A su vez, para esta prueba, descartaremos la variable **Cabin**.
+
+Además, la variable **Embarked** debenmos modificarla de la misma manera que **Sex**, por lo que la modificación de realizará de la siguiente manera:
+
+* Cherbourg(**C**) = 0
+* Queenstown(**Q**) = 1
+* Southampton(**S**) = 2
+
+```{r}
+# Creamos un nuevo conjunto de datos a partir del original (solo para esta prueba)
+train_df_corr <- train_df
+
+# Realizamos las modificaciones descritas anteriormente
+train_df_corr$Sex[train_df_corr$Sex=='male'] <- 0
+train_df_corr$Sex[train_df_corr$Sex=='female'] <- 1
+
+train_df_corr$Embarked[train_df_corr$Embarked=='C'] <- 0
+train_df_corr$Embarked[train_df_corr$Embarked=='Q'] <- 1
+train_df_corr$Embarked[train_df_corr$Embarked=='S'] <- 2
+
+train_df_corr$Survived <- as.numeric(train_df_corr$Survived)
+train_df_corr$Pclass <- as.numeric(train_df_corr$Pclass)
+train_df_corr$Sex <- as.numeric(train_df_corr$Sex)
+train_df_corr$Age <- as.numeric(train_df_corr$Age)
+train_df_corr$SibSp <- as.numeric(train_df_corr$SibSp)
+train_df_corr$Parch <- as.numeric(train_df_corr$Parch)
+train_df_corr$Fare <- as.numeric(train_df_corr$Fare)
+train_df_corr$Embarked <- as.numeric(train_df_corr$Embarked)
+
+train_df_corr$Cabin <- NULL
+train_df_corr$PassengerId <- NULL
+
+head(train_df_corr, 10)
+```
+
+Una vez realizadas las transformaciones previas a nuestro nuevo conjunto de datos (únicamente para esta prueba), aplicaremos el *test de Spearman* para poder calcular las correlaciones entre pares de variables.
+
+```{r}
+# Aplicamos el test de Spearman
+corr_res <- cor(train_df_corr, method="spearman")
+corr_res
+```
+A continuación, realizaremos una representación gráfica de nuestra matriz de correlación, donde podremos observar qué variables están correlacionadas con otras.
+```{r}
+# Aplicamos el test de Spearman
+library(corrplot)
+corrplot(corr_res, method="color", tl.col = "black")
+```
+
+Como podemos observar, hay una clara correlación entre las variables **Sex** y **Survived**, por lo que la probabilidad de sobrevivir a la catástrofe vino dada, en parte, por el sexo.
+
+Además, se observa un grupo de correlación entre diversas variables sobre **Parch** que, como sabemos del análisis previo de nuestro conjunto de datos, viene dado por el número de parientes directos (de tipo vertical, como pueden ser padres, hijos, nietos...)
+
+Como vemos, la variable **Parch** esta correlacionada con la variable **SibSp**, que a simple vista, podemos deducir que, al tratarse de número de parientes directos (tanto en vertical como en horizontal), estas variables van a ir normalmente de la mano para cada pasajero
+
+Así como la variable **Fare**, que esta correlacionada con las variables anteriormente descritas, **SibSp** y **Fare**.
 
 
 __Contraste de hipótesis:__
