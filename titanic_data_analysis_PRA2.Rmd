@@ -446,4 +446,20 @@ border="brown"
 
 Confirmamos que los que sobrevivieron también tenían tarifas más caras.
 
+__6. Resolución del problema. A partir de los resultados obtenidos, ¿cuáles son las conclusiones? ¿Los resultados permiten responder al problema?__
 
+Una vez realizados todos los pasos anteriores, podemos sacar como conclusiones los resultados obtenidos de las distintas pruebas estadísticas sobre nuestro conjunto de datos que, a través de diversas *tablas* y *gráficas*, podemos ver las distintas variables que influyeron sobre la probabilidad de sobrevivir al hundimiento del Titanic.
+
+Como primer paso, los datos han sido sometidos a un procesamiento para manejar lso casos de ceros o elementos vacíos y valores extremos (*outliers*).
+
+A través de los resultados obtenidos, en este caso, de la matriz de correlación y la regresión logística, podemos observar claramente cuáles eran los patrones que determinaron las probabilidades de sobrevivir de cada pasajero. Como principal resultado, se obtuvo que los **hombres** tenían una alta propabilidad de **no sobrevivir**, marcado por la organización de los botes salvavidas, ya que **las mujeres y niños tenian prioridad** a la hora de embarcar en los botes.
+
+Otro resultado clarificador, es la **edad**, cuanto mayor era un pasajero, mayores probabilidades de **no sobrevivir** tenía, ya sea por la capacidad de reacción, velocidad o capacidad para poder zafarse de los infortunios antes de tener probabilidades de sobrevivir.
+
+Como pudimos ver en la matriz de correlación, las variables que conformaban el **número de parientes directos** (tanto verticales como horizontales) estaban correlacionadas, que, más tarde, pudimos observar de forma gráfica cómo el número de parientes de cada pasajero **influía negativamente en las probabilidades de supervivencia** del mismo, ya que, **a mayor número de parientes en el barco, menor probabilidad de supervivencia**, ya sea por el afán de cada pasajero de encontrar, proteger y poner a salvo a sus parientes.
+
+Otro resultado bastante claro es el que nos arroja la variable **Fare**, tanto en la matriz de correlación como en la regresión logística, ya que el haber pagado una tarifa superior al resto de pasajeros, pudo influir en las probabilidades de sobrevivir, ya que, por ejemplo, un pasajero de clase alta (se presupone que ha pagado una tarifa alta) tuvo mayores facilidades para sobrevivir que una persona que haya pagado la tarifa de menor coste, ya que, tal vez, pudo embarcar antes ese pasajero de alta clase que el que no.
+
+Y, como resultado final que se obtuvo en la regresión logística, es que el número de cabina influyó en las probabilidades de sobrevivir de sus ocupantes, básicamente, por la posición en la que se encontraban en el barco, seguramente, más cerca de los botes.
+
+Antes esta batería de resultados, podemos responder satisfactoriamente que los resultados obtenidos sí responden al problema propuesto al comienzo de este estudio
