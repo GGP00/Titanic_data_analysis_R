@@ -1,9 +1,11 @@
 ---
-title: "PRA2 - Tipología y ciclo de vida de dato"
+title: "PRA2 - Tipología y ciclo de vida de datos"
+graphics: yes
 output:
+  pdf_document:
+    latex_engine: xelatex
   html_document:
     df_print: paged
-  pdf_document: default
 ---
 <br><br>
 <center> <h3> _Alumnos: Omar Mendo Mesa y Guzmán Gómez Pérez _  </h3> </center>
@@ -55,7 +57,7 @@ __1.1 Carga del dataset:__
 
 ```{r}
 #getwd()
-setwd("~/Desktop/Máster UOC/Tipología y ciclo de vida de datos/bloque 2/Titanic_data_analysis_R/data")
+setwd("/Users/omendom/Desktop/Máster/Tipología y ciclo de vida de los datos/PRA2/Titanic_data_analysis_R/data")
 train_df <- read.csv(file="train.csv",head=TRUE,sep=",")
 test_df <- read.csv(file="test.csv",head=TRUE,sep=",")
 
