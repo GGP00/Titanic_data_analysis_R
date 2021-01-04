@@ -1,9 +1,9 @@
 ---
 title: "PRA2 - Tipología y ciclo de vida de dato"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 <br><br>
 <center> <h3> _Alumnos: Omar Mendo Mesa y Guzmán Gómez Pérez _  </h3> </center>
@@ -468,6 +468,9 @@ Antes esta batería de resultados, podemos responder satisfactoriamente que los 
 ## Contribuciones
 
 Contribuciones: Firma
+
 __Investigación previa__: Omar Mendo Mesa y Guzmán Gómez Pérez.
+
 __Redacción de las respuestas__: Omar Mendo Mesa y Guzmán Gómez Pérez.
+
 __Desarrollo código__: Omar Mendo Mesa y Guzmán Gómez Pérez.
