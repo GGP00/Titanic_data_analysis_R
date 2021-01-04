@@ -179,7 +179,7 @@ existió algún patrón entre los afortundados supervivientes.
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{#getwd()}
-\KeywordTok{setwd}\NormalTok{(}\StringTok{"/Users/guzman/Desktop/Máster UOC/Tipología y ciclo de vida de datos/bloque 2/Titanic_data_analysis_R/data"}\NormalTok{)}
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"~/Desktop/Máster UOC/Tipología y ciclo de vida de datos/bloque 2/Titanic_data_analysis_R/data"}\NormalTok{)}
 \NormalTok{train_df <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\DataTypeTok{file=}\StringTok{"train.csv"}\NormalTok{,}\DataTypeTok{head=}\OtherTok{TRUE}\NormalTok{,}\DataTypeTok{sep=}\StringTok{","}\NormalTok{)}
 \NormalTok{test_df <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\DataTypeTok{file=}\StringTok{"test.csv"}\NormalTok{,}\DataTypeTok{head=}\OtherTok{TRUE}\NormalTok{,}\DataTypeTok{sep=}\StringTok{","}\NormalTok{)}
 
@@ -688,6 +688,201 @@ Aplicar al menos tres métodos de análisis diferentes.}
 
 \textbf{Correlaciones:}
 
+Para comenzar con la aplicación de pruebas estadísticas sobre nuestro
+conjunto de datos, usaremos una \textbf{matriz de correlación} para
+poder observar o seleccionar las variables que sean de mayor interés o
+que nos arrojen algún resultado esclarecedor de si alguna de las
+variables descritas en nuestro dataset, infiere sobre la probabilidad de
+supervivencia.
+
+Para realizar dicha matriz, tenemos que realizar una serie de
+modificaciones en nuestro conjunto de datos, ya que para poder realizar
+correlaciones entre múltiples variables, necesitamos que estas sean
+\emph{numéricas}. Por ello, la variable \emph{Sex} la modificaremos,
+donde el valor \textbf{female} tomará el valor \textbf{1} y el valor
+\textbf{male} tomará el valor \textbf{0}. A su vez, para esta prueba,
+descartaremos la variable \textbf{Cabin}.
+
+Además, la variable \textbf{Embarked} debenmos modificarla de la misma
+manera que \textbf{Sex}, por lo que la modificación de realizará de la
+siguiente manera:
+
+\begin{itemize}
+\tightlist
+\item
+  Cherbourg(\textbf{C}) = 0
+\item
+  Queenstown(\textbf{Q}) = 1
+\item
+  Southampton(\textbf{S}) = 2
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Creamos un nuevo conjunto de datos a partir del original (solo para esta prueba)}
+\NormalTok{train_df_corr <-}\StringTok{ }\NormalTok{train_df}
+
+\CommentTok{# Realizamos las modificaciones descritas anteriormente}
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{Sex[train_df_corr}\OperatorTok{$}\NormalTok{Sex}\OperatorTok{==}\StringTok{'male'}\NormalTok{] <-}\StringTok{ }\DecValTok{0}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in `[<-.factor`(`*tmp*`, train_df_corr$Sex == "male", value =
+## structure(c(NA, : invalid factor level, NA generated
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{Sex[train_df_corr}\OperatorTok{$}\NormalTok{Sex}\OperatorTok{==}\StringTok{'female'}\NormalTok{] <-}\StringTok{ }\DecValTok{1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in `[<-.factor`(`*tmp*`, train_df_corr$Sex == "female", value =
+## structure(c(NA_integer_, : invalid factor level, NA generated
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{Embarked[train_df_corr}\OperatorTok{$}\NormalTok{Embarked}\OperatorTok{==}\StringTok{'C'}\NormalTok{] <-}\StringTok{ }\DecValTok{0}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in `[<-.factor`(`*tmp*`, train_df_corr$Embarked == "C", value =
+## structure(c(4L, : invalid factor level, NA generated
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{Embarked[train_df_corr}\OperatorTok{$}\NormalTok{Embarked}\OperatorTok{==}\StringTok{'Q'}\NormalTok{] <-}\StringTok{ }\DecValTok{1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in `[<-.factor`(`*tmp*`, train_df_corr$Embarked == "Q", value =
+## structure(c(4L, : invalid factor level, NA generated
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{Embarked[train_df_corr}\OperatorTok{$}\NormalTok{Embarked}\OperatorTok{==}\StringTok{'S'}\NormalTok{] <-}\StringTok{ }\DecValTok{2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in `[<-.factor`(`*tmp*`, train_df_corr$Embarked == "S", value =
+## structure(c(NA_integer_, : invalid factor level, NA generated
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{Survived <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(train_df_corr}\OperatorTok{$}\NormalTok{Survived)}
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{Pclass <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(train_df_corr}\OperatorTok{$}\NormalTok{Pclass)}
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{Sex <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(train_df_corr}\OperatorTok{$}\NormalTok{Sex)}
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{Age <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(train_df_corr}\OperatorTok{$}\NormalTok{Age)}
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{SibSp <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(train_df_corr}\OperatorTok{$}\NormalTok{SibSp)}
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{Parch <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(train_df_corr}\OperatorTok{$}\NormalTok{Parch)}
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{Fare <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(train_df_corr}\OperatorTok{$}\NormalTok{Fare)}
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{Embarked <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(train_df_corr}\OperatorTok{$}\NormalTok{Embarked)}
+
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{Cabin <-}\StringTok{ }\OtherTok{NULL}
+\NormalTok{train_df_corr}\OperatorTok{$}\NormalTok{PassengerId <-}\StringTok{ }\OtherTok{NULL}
+
+\KeywordTok{head}\NormalTok{(train_df_corr, }\DecValTok{10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Survived Pclass Sex  Age SibSp Parch    Fare Embarked
+## 1         1      3  NA 22.0     2     1  7.2500       NA
+## 3         2      3  NA 26.0     1     1  7.9250       NA
+## 4         2      1  NA 35.0     2     1 53.1000       NA
+## 5         1      3  NA 35.0     1     1  8.0500       NA
+## 6         1      3  NA 40.5     1     1  8.4583       NA
+## 7         1      1  NA 54.0     1     1 51.8625       NA
+## 8         1      3  NA  2.0     4     2 21.0750       NA
+## 9         2      3  NA 27.0     1     3 11.1333       NA
+## 10        2      2  NA 14.0     2     1 30.0708       NA
+## 11        2      3  NA  4.0     2     2 16.7000       NA
+\end{verbatim}
+
+Una vez realizadas las transformaciones previas a nuestro nuevo conjunto
+de datos (únicamente para esta prueba), aplicaremos el \emph{test de
+Spearman} para poder calcular las correlaciones entre pares de
+variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Aplicamos el test de Spearman}
+\NormalTok{corr_res <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(train_df_corr, }\DataTypeTok{method=}\StringTok{"spearman"}\NormalTok{)}
+\NormalTok{corr_res}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            Survived      Pclass Sex         Age       SibSp       Parch
+## Survived  1.0000000 -0.28134904  NA -0.12400687  0.07314080  0.15495698
+## Pclass   -0.2813490  1.00000000  NA -0.36380384  0.01158735  0.02767919
+## Sex              NA          NA   1          NA          NA          NA
+## Age      -0.1240069 -0.36380384  NA  1.00000000 -0.22802158 -0.30368610
+## SibSp     0.0731408  0.01158735  NA -0.22802158  1.00000000  0.46916106
+## Parch     0.1549570  0.02767919  NA -0.30368610  0.46916106  1.00000000
+## Fare      0.2587331 -0.55783246  NA  0.08104727  0.47421689  0.44168118
+## Embarked         NA          NA  NA          NA          NA          NA
+##                 Fare Embarked
+## Survived  0.25873309       NA
+## Pclass   -0.55783246       NA
+## Sex               NA       NA
+## Age       0.08104727       NA
+## SibSp     0.47421689       NA
+## Parch     0.44168118       NA
+## Fare      1.00000000       NA
+## Embarked          NA        1
+\end{verbatim}
+
+A continuación, realizaremos una representación gráfica de nuestra
+matriz de correlación, donde podremos observar qué variables están
+correlacionadas con otras.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Aplicamos el test de Spearman}
+\KeywordTok{library}\NormalTok{(corrplot)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## corrplot 0.84 loaded
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{corrplot}\NormalTok{(corr_res, }\DataTypeTok{method=}\StringTok{"color"}\NormalTok{, }\DataTypeTok{tl.col =} \StringTok{"black"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{titanic_data_analysis_PRA2_files/figure-latex/unnamed-chunk-23-1.pdf}
+
+Como podemos observar, hay una clara correlación entre las variables
+\textbf{Sex} y \textbf{Survived}, por lo que la probabilidad de
+sobrevivir a la catástrofe vino dada, en parte, por el sexo.
+
+Además, se observa un grupo de correlación entre diversas variables
+sobre \textbf{Parch} que, como sabemos del análisis previo de nuestro
+conjunto de datos, viene dado por el número de parientes directos (de
+tipo vertical, como pueden ser padres, hijos, nietos\ldots{})
+
+Como vemos, la variable \textbf{Parch} esta correlacionada con la
+variable \textbf{SibSp}, que a simple vista, podemos deducir que, al
+tratarse de número de parientes directos (tanto en vertical como en
+horizontal), estas variables van a ir normalmente de la mano para cada
+pasajero
+
+Así como la variable \textbf{Fare}, que esta correlacionada con las
+variables anteriormente descritas, \textbf{SibSp} y \textbf{Fare}.
+
 \textbf{Contraste de hipótesis:}
 
 \begin{itemize}
@@ -920,7 +1115,7 @@ Relación entre el género y la supervivencia:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{titanic_data_analysis_PRA2_files/figure-latex/unnamed-chunk-25-1.pdf}
+\includegraphics{titanic_data_analysis_PRA2_files/figure-latex/unnamed-chunk-28-1.pdf}
 
 Confirmamos que ser hombres perjudicaba a la supervivencia.
 
@@ -932,7 +1127,7 @@ Relación entre el parenteso ``horizontal'' y la supervivencia:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{titanic_data_analysis_PRA2_files/figure-latex/unnamed-chunk-26-1.pdf}
+\includegraphics{titanic_data_analysis_PRA2_files/figure-latex/unnamed-chunk-29-1.pdf}
 
 Confirmamos que a mayor número de familiares, menor probabilidad de
 supervivencia.
@@ -951,7 +1146,7 @@ Relación entre la edad y la supervivencia:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{titanic_data_analysis_PRA2_files/figure-latex/unnamed-chunk-27-1.pdf}
+\includegraphics{titanic_data_analysis_PRA2_files/figure-latex/unnamed-chunk-30-1.pdf}
 
 Confirmamos que los que sobrevivieron eran algo más jóvenes que los que
 no, sobre los 25 años de media.
@@ -970,8 +1165,71 @@ Relación entre la tarifa y la supervivencia:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{titanic_data_analysis_PRA2_files/figure-latex/unnamed-chunk-28-1.pdf}
+\includegraphics{titanic_data_analysis_PRA2_files/figure-latex/unnamed-chunk-31-1.pdf}
 
 Confirmamos que los que sobrevivieron también tenían tarifas más caras.
+
+\textbf{6. Resolución del problema. A partir de los resultados
+obtenidos, ¿cuáles son las conclusiones? ¿Los resultados permiten
+responder al problema?}
+
+Una vez realizados todos los pasos anteriores, podemos sacar como
+conclusiones los resultados obtenidos de las distintas pruebas
+estadísticas sobre nuestro conjunto de datos que, a través de diversas
+\emph{tablas} y \emph{gráficas}, podemos ver las distintas variables que
+influyeron sobre la probabilidad de sobrevivir al hundimiento del
+Titanic.
+
+Como primer paso, los datos han sido sometidos a un procesamiento para
+manejar lso casos de ceros o elementos vacíos y valores extremos
+(\emph{outliers}).
+
+A través de los resultados obtenidos, en este caso, de la matriz de
+correlación y la regresión logística, podemos observar claramente cuáles
+eran los patrones que determinaron las probabilidades de sobrevivir de
+cada pasajero. Como principal resultado, se obtuvo que los
+\textbf{hombres} tenían una alta propabilidad de \textbf{no sobrevivir},
+marcado por la organización de los botes salvavidas, ya que \textbf{las
+mujeres y niños tenian prioridad} a la hora de embarcar en los botes.
+
+Otro resultado clarificador, es la \textbf{edad}, cuanto mayor era un
+pasajero, mayores probabilidades de \textbf{no sobrevivir} tenía, ya sea
+por la capacidad de reacción, velocidad o capacidad para poder zafarse
+de los infortunios antes de tener probabilidades de sobrevivir.
+
+Como pudimos ver en la matriz de correlación, las variables que
+conformaban el \textbf{número de parientes directos} (tanto verticales
+como horizontales) estaban correlacionadas, que, más tarde, pudimos
+observar de forma gráfica cómo el número de parientes de cada pasajero
+\textbf{influía negativamente en las probabilidades de supervivencia}
+del mismo, ya que, \textbf{a mayor número de parientes en el barco,
+menor probabilidad de supervivencia}, ya sea por el afán de cada
+pasajero de encontrar, proteger y poner a salvo a sus parientes.
+
+Otro resultado bastante claro es el que nos arroja la variable
+\textbf{Fare}, tanto en la matriz de correlación como en la regresión
+logística, ya que el haber pagado una tarifa superior al resto de
+pasajeros, pudo influir en las probabilidades de sobrevivir, ya que, por
+ejemplo, un pasajero de clase alta (se presupone que ha pagado una
+tarifa alta) tuvo mayores facilidades para sobrevivir que una persona
+que haya pagado la tarifa de menor coste, ya que, tal vez, pudo embarcar
+antes ese pasajero de alta clase que el que no.
+
+Y, como resultado final que se obtuvo en la regresión logística, es que
+el número de cabina influyó en las probabilidades de sobrevivir de sus
+ocupantes, básicamente, por la posición en la que se encontraban en el
+barco, seguramente, más cerca de los botes.
+
+Antes esta batería de resultados, podemos responder satisfactoriamente
+que los resultados obtenidos sí responden al problema propuesto al
+comienzo de este estudio.
+
+\hypertarget{contribuciones}{%
+\subsection{Contribuciones}\label{contribuciones}}
+
+Contribuciones: Firma \textbf{Investigación previa}: Omar Mendo Mesa y
+Guzmán Gómez Pérez. \textbf{Redacción de las respuestas}: Omar Mendo
+Mesa y Guzmán Gómez Pérez. \textbf{Desarrollo código}: Omar Mendo Mesa y
+Guzmán Gómez Pérez.
 
 \end{document}
